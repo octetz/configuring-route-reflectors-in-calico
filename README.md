@@ -1,3 +1,13 @@
+---
+title: Configuring Route Reflectors in Calico
+header-includes:
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="joshrosso.com" />
+    <meta name="twitter:title" content="Configuring Route Reflectors in Calico" />
+    <meta name="twitter:description" content="A look at setting up route reflection in Calico for your Kubernetes clusters!" />
+    <meta name="twitter:image" content="https://joshrosso.com/images/rrbanner.png" />
+---
+
 # Configuring Route Reflectors in Calico
 
 Calico is a popular CNI plugin for Kubernetes. It leverages Border Gateway Protocol (BGP) for communicating routes available on nodes. This method fosters a highly scalable networking model between our workloads.
@@ -15,7 +25,7 @@ kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/
 
 Once started, Calico runs a node-to-node mesh. This means every node peers to every other node to broadcast routes. This is done from the `calico/node` pod that runs on every node (via a daemonset). Let's assume a 5 node cluster, with an IP range of `10.30.0.13-10.30.0.17`.
 
-<center><img src="imgs/routes.png" width="750px"></center>
+<center><img src="img/routes.png" width="750px"></center>
 
 Every colored line represents a peering connection we'd expect in this cluster. These connections can be surfaced by downloading [calicoctl](https://github.com/projectcalico/calicoctl/releases) and running `sudo calicoctl node status` on a node. The example below shows the output from `10.30.0.15` in our example.
 
@@ -37,7 +47,7 @@ IPv4 BGP status
 
 This default behavior prevents us from worrying about upstream routers and BGP-configuration complexity. However, once our cluster grows to hundreds of nodes, we may find this node-to-node mesh to be no longer scalable. Route reflectors provide a solution to this. Since Calico 3, `calico/node` can act as a reflector. Introducing 2 `calico/node` pods or containers as route reflectors would change the peering relationship to the following.
 
-<center><img src="imgs/route-reflection.png" width="600px"></center>
+<center><img src="img/route-reflection.png" width="600px"></center>
 
 Calico makes achieving the above easy. We have 3 options to choose from.
 
